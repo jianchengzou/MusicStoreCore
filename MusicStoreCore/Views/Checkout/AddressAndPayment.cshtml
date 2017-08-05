@@ -1,0 +1,29 @@
+@model AddressAndPaymentViewModel
+@{
+    ViewBag.Title = "Address and Payment";
+}
+
+<form asp-action="AddressAndPayment">
+    <h2>Address and Payment</h2>
+    <div asp-validation-summary="ModelOnly"></div>
+    <fieldset>
+        <legend>Shipping Information</legend>
+        @Html.EditorForModel()
+    </fieldset>
+    <fieldset>
+        <legend>Payment</legend>
+        <p>
+            We're running a promotion: all music is free
+            with the promo code: "FREE"
+        </p>
+        <div class="form-group">
+            <label asp-for="PromoCode" class="col-md-2 control-label editor-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PromoCode" class="form-control editor-field" />
+                <span asp-validation-for="PromoCode" class="text-danger"></span>
+            </div>
+        </div>
+    </fieldset>
+
+    <input type="submit" value="Submit Order" />
+</form>

@@ -1,0 +1,15 @@
+@model Genre
+@{
+    ViewBag.Title = "Browse Albums";
+}
+<div class="genre">
+    <h2><em>@Model.Name</em> Albums</h2>
+    <ul id="album-list">
+        @foreach (var album in Model.Albums)
+        {
+            <li>
+                <a asp-controller="Store" asp-action="Details" asp-route-id="@album.AlbumId"><img alt="@album.Title" src="@album.AlbumArtUrl" /><span>@album.Title</span></a>
+            </li>
+        }
+    </ul>
+</div>
