@@ -1,6 +1,8 @@
 @model IEnumerable<IdentityRole>
-
-<div class="bg-primary panel-body"><h4>Roles</h4></div>
+@{
+    ViewBag.Title = "Roles Administration";
+}
+<div class="bg-primary panel-body"><h4>Roles Administration</h4></div>
 <div class="text-danger" asp-validation-summary="ModelOnly"></div>
 <table class="table table-condensed table-bordered table-bordered">
     <tr><th>ID</th><th>Name</th><th>Users</th><th></th></tr>
