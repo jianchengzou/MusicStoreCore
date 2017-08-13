@@ -8,8 +8,8 @@ using MusicStoreCore.Models;
 namespace MusicStoreCore.Migrations
 {
     [DbContext(typeof(MusicStoreDbContext))]
-    [Migration("20170728134250_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20170812080657_IntialCreate")]
+    partial class IntialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

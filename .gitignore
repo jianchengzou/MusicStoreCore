@@ -259,3 +259,5 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/MusicStoreCore/Properties/PublishProfiles/MusicStoreCore2017 - Web Deploy.pubxml
+/MusicStoreCore/TODO.txt

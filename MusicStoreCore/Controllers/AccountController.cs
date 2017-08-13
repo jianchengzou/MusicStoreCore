@@ -36,7 +36,7 @@ namespace MusicStoreCore.Controllers
             {
                 var user = new User()
                 {
-                    UserName = model.UserName                    
+                    UserName = model.UserName
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -57,11 +57,93 @@ namespace MusicStoreCore.Controllers
             return View();
         }
 
-        [HttpPost,ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Store");
+        }
+
+        /// <summary>
+        /// Reset Password, sample query string /Account/ResetPassword?userId=283c86c8-5968-48bc-af75-0aa323b4886a
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                var model = new ResetPasswordViewModel
+                {
+                    Id = userId,
+                    ResetToken = resetToken,
+                    UserName = user.UserName
+                };
+                return View(model);
+            }
+
+            return NotFound();
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByNameAsync(model.UserName);
+
+                var result = await _userManager.ResetPasswordAsync(user, model.ResetToken, model.Password);
+
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, false);
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    foreach (var err in result.Errors)
+                    {
+                        ModelState.AddModelError("", err.Description);
+                    }
+                }
+            }
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordRequest()
+        {
+            return View();
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPasswordRequest(string userName)
+        {
+            if (ModelState.IsValid)
+            {
+                //find the user
+                User user = await _userManager.FindByNameAsync(userName);
+                if (user != null)
+                {
+                    //Todo: Send user a link to reset the 
+                    return RedirectToAction("ResetPasswordRequestConfirmed");
+                }
+
+            }
+            ModelState.AddModelError("", "Could not reset!");
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordRequestConfirmed()
+        {
+            return View();
         }
 
         [HttpGet]
@@ -87,11 +169,11 @@ namespace MusicStoreCore.Controllers
                     else
                     {
                         return RedirectToAction("Index", "Store");
-                    }                    
-                }           
+                    }
+                }
             }
             ModelState.AddModelError("", "Could not login!!");
-            return View(model);            
+            return View(model);
         }
 
         private void MigrateShoppingCart(string userName)
@@ -105,5 +187,7 @@ namespace MusicStoreCore.Controllers
         {
             return View();
         }
+
+
     }
 }

@@ -5,26 +5,10 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace MusicStoreCore.Migrations
 {
-    public partial class Identity : Migration
+    public partial class IntialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "Title",
-                table: "Albums",
-                maxLength: 160,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldMaxLength: 80);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "AlbumArtUrl",
-                table: "Albums",
-                maxLength: 1024,
-                nullable: true,
-                oldClrType: typeof(string),
-                oldNullable: true);
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -51,6 +35,57 @@ namespace MusicStoreCore.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Artists",
+                columns: table => new
+                {
+                    ArtistId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Artists", x => x.ArtistId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Genres",
+                columns: table => new
+                {
+                    GenreId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Description = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Genres", x => x.GenreId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    OrderId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Address = table.Column<string>(maxLength: 70, nullable: false),
+                    City = table.Column<string>(maxLength: 40, nullable: false),
+                    Country = table.Column<string>(maxLength: 40, nullable: false),
+                    Email = table.Column<string>(nullable: false),
+                    FirstName = table.Column<string>(maxLength: 160, nullable: false),
+                    LastName = table.Column<string>(maxLength: 160, nullable: false),
+                    OrderDate = table.Column<DateTime>(nullable: false),
+                    Phone = table.Column<string>(maxLength: 24, nullable: false),
+                    PostalCode = table.Column<string>(maxLength: 10, nullable: false),
+                    State = table.Column<string>(maxLength: 40, nullable: false),
+                    Total = table.Column<decimal>(nullable: false),
+                    UserName = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.OrderId);
                 });
 
             migrationBuilder.CreateTable(
@@ -96,6 +131,35 @@ namespace MusicStoreCore.Migrations
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Albums",
+                columns: table => new
+                {
+                    AlbumId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    AlbumArtUrl = table.Column<string>(maxLength: 1024, nullable: true),
+                    ArtistId = table.Column<int>(nullable: false),
+                    GenreId = table.Column<int>(nullable: false),
+                    Price = table.Column<decimal>(nullable: false),
+                    Title = table.Column<string>(maxLength: 160, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Albums", x => x.AlbumId);
+                    table.ForeignKey(
+                        name: "FK_Albums_Artists_ArtistId",
+                        column: x => x.ArtistId,
+                        principalTable: "Artists",
+                        principalColumn: "ArtistId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Albums_Genres_GenreId",
+                        column: x => x.GenreId,
+                        principalTable: "Genres",
+                        principalColumn: "GenreId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -164,6 +228,56 @@ namespace MusicStoreCore.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "CartItems",
+                columns: table => new
+                {
+                    RecordId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    AlbumId = table.Column<int>(nullable: false),
+                    Count = table.Column<int>(nullable: false),
+                    DateCreated = table.Column<DateTime>(nullable: false),
+                    ShoppingCartId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CartItems", x => x.RecordId);
+                    table.ForeignKey(
+                        name: "FK_CartItems_Albums_AlbumId",
+                        column: x => x.AlbumId,
+                        principalTable: "Albums",
+                        principalColumn: "AlbumId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderDetails",
+                columns: table => new
+                {
+                    OrderDetailId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    AlbumId = table.Column<int>(nullable: false),
+                    OrderId = table.Column<int>(nullable: false),
+                    Quantity = table.Column<int>(nullable: false),
+                    UnitPrice = table.Column<decimal>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderDetails", x => x.OrderDetailId);
+                    table.ForeignKey(
+                        name: "FK_OrderDetails_Albums_AlbumId",
+                        column: x => x.AlbumId,
+                        principalTable: "Albums",
+                        principalColumn: "AlbumId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderDetails_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
@@ -189,6 +303,31 @@ namespace MusicStoreCore.Migrations
                 name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Albums_ArtistId",
+                table: "Albums",
+                column: "ArtistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Albums_GenreId",
+                table: "Albums",
+                column: "GenreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartItems_AlbumId",
+                table: "CartItems",
+                column: "AlbumId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDetails_AlbumId",
+                table: "OrderDetails",
+                column: "AlbumId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDetails_OrderId",
+                table: "OrderDetails",
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
@@ -220,26 +359,28 @@ namespace MusicStoreCore.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "CartItems");
+
+            migrationBuilder.DropTable(
+                name: "OrderDetails");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "Title",
-                table: "Albums",
-                maxLength: 80,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldMaxLength: 160);
+            migrationBuilder.DropTable(
+                name: "Albums");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "AlbumArtUrl",
-                table: "Albums",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldMaxLength: 1024,
-                oldNullable: true);
+            migrationBuilder.DropTable(
+                name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "Artists");
+
+            migrationBuilder.DropTable(
+                name: "Genres");
         }
     }
 }

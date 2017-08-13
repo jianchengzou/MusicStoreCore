@@ -7,17 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20170710224631_InitialCreate.cs" />
-    <Compile Remove="Migrations\20170710224631_InitialCreate.Designer.cs" />
-    <Compile Remove="Migrations\20170719115638_InitialCreate.cs" />
-    <Compile Remove="Migrations\20170719115638_InitialCreate.Designer.cs" />
-    <Compile Remove="Migrations\20170728052747_InitialCreate.cs" />
-    <Compile Remove="Migrations\20170728052747_InitialCreate.Designer.cs" />
-    <Compile Remove="Migrations\20170728124422_InitialCreate.cs" />
-    <Compile Remove="Migrations\20170728124422_InitialCreate.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Properties\PublishProfiles\MusicStoreCore2017 - Web Deploy.pubxml" />
   </ItemGroup>
 
@@ -146,6 +135,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="1.1.1" />
+    <PackageReference Include="Moon.AspNetCore.Rewrite" Version="3.1.1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bower_components\modernizr\test\qunit\" />

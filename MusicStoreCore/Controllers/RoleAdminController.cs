@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace MusicStoreCore.Controllers
 {
     [Authorize(Roles ="Admins")]
+    [RequireHttps]
     public class RoleAdminController : Controller
     {
         private RoleManager<IdentityRole> roleManager;

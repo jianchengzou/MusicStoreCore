@@ -15,6 +15,8 @@ using MusicStoreCore.Services;
 using MusicStoreCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace MusicStoreCore
 {
@@ -25,6 +27,7 @@ namespace MusicStoreCore
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional:true, reloadOnChange: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -36,7 +39,14 @@ namespace MusicStoreCore
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            
+
+            #region Requiring HTTPS globally
+            //services.Configure<MvcOptions>(options =>
+            //{
+            //    options.Filters.Add(new RequireHttpsAttribute());
+            //});
+            #endregion
+
             #region enable session
             // Adds a default in-memory implementation of IDistributedCache.
             services.AddDistributedMemoryCache();
@@ -58,7 +68,8 @@ namespace MusicStoreCore
             services.AddIdentity<User, IdentityRole>(options => {
                 options.Cookies.ApplicationCookie.AccessDeniedPath = "/Account/Login";
                 })
-                .AddEntityFrameworkStores<MusicStoreDbContext>();
+                .AddEntityFrameworkStores<MusicStoreDbContext>()
+                .AddDefaultTokenProviders();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -88,10 +99,17 @@ namespace MusicStoreCore
                 });
             }
 
+            #region redirect all http to https
+            //var options = new RewriteOptions().AddRedirectToHttps();
+            //app.UseRewriter(options);
+
+            #endregion
+
+
             app.UseFileServer();
             app.UseStaticFiles(new StaticFileOptions()
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "bower_components")),
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "bower_components")),
                 RequestPath = "/bower_components"                
             });
 
@@ -100,8 +118,7 @@ namespace MusicStoreCore
             app.UseMvc(ConfigureRoutes);
 
             //app.Run(ctx => ctx.Response.WriteAsync("Not found")); this will force not loaded css or js to return 404 error
-            AppIdentityDbContext.CreateAdminAccount(app.ApplicationServices, 
-                Configuration).Wait();
+            AppIdentityDbContext.CreateAdminAccount(app.ApplicationServices, Configuration).Wait();
         }
 
         private void ConfigureRoutes(IRouteBuilder routeBuilder)
